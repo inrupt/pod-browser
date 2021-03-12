@@ -23,7 +23,7 @@ import { renderHook } from "@testing-library/react-hooks";
 import useSWR from "swr";
 import { useSession } from "@inrupt/solid-ui-react";
 import { createThing, mockThingFrom } from "@inrupt/solid-client";
-import useContactProfile from "./index";
+import useContactProfileOld from "./index";
 import * as profileModel from "../../models/profile";
 import * as addressBookFns from "../../addressBook";
 import * as resourceFns from "../../solidClientHelpers/resource";
@@ -33,7 +33,7 @@ jest.mock("swr");
 
 const mockedSwrHook = useSWR;
 
-describe("useContactProfile", () => {
+describe("useContactProfileOld", () => {
   const swrResponse = 42;
 
   beforeEach(() => {
@@ -43,7 +43,7 @@ describe("useContactProfile", () => {
   useSession.mockReturnValue({ fetch: jest.fn() });
   it("exits if no person url", async () => {
     const contactThing = createThing();
-    renderHook(() => useContactProfile(contactThing));
+    renderHook(() => useContactProfileOld(contactThing));
     await expect(mockedSwrHook.mock.calls[0][1]()).resolves.toBeNull();
   });
 
@@ -69,9 +69,11 @@ describe("useContactProfile", () => {
       .spyOn(addressBookFns, "getWebIdUrl")
       .mockReturnValue("https://example.org");
 
-    jest.spyOn(profileModel, "getProfileForContact").mockResolvedValue(profile);
+    jest
+      .spyOn(profileModel, "getProfileForContactOld")
+      .mockResolvedValue(profile);
 
-    renderHook(() => useContactProfile(contactThing));
+    renderHook(() => useContactProfileOld(contactThing));
 
     await expect(mockedSwrHook.mock.calls[0][1]()).resolves.toEqual(profile);
   });

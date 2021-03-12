@@ -1,0 +1,107 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AddAgentRow when adding a new webId renders a row with an input for the first item in the array 1`] = `
+<DocumentFragment>
+  <div
+    class="PodBrowser-agentPickerFormContainer"
+  >
+    <form
+      class="PodBrowser-addAgentForm"
+    >
+      <div
+        class="PodBrowser-searchBoxContainer"
+      >
+        <div
+          aria-label="Enter WebID"
+          class="PodBrowser-root PodBrowser-root PodBrowser-searchInput"
+        >
+          <div
+            class="PodBrowser-root PodBrowser-root PodBrowser-searchInput PodBrowser-formControl PodBrowser-formControl"
+            pattern="https://.+"
+            title="Must start with https://"
+          >
+            <input
+              aria-invalid="false"
+              class="PodBrowser-input PodBrowser-input"
+              data-testid="webid-input"
+              placeholder="Enter WebID"
+              required=""
+              type="url"
+              value=""
+            />
+          </div>
+        </div>
+      </div>
+      <button
+        class="PodBrowser-button PodBrowser-button--with-input PodBrowser-button"
+        data-testid="add-button"
+        type="submit"
+      >
+        <span
+          class="PodBrowser-button__text"
+        >
+          Add
+        </span>
+      </button>
+    </form>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AddAgentRow with existing contacts for newly added webids, if profile is unavailable it renders a row with the provided webId 1`] = `
+<DocumentFragment>
+  <div
+    class="PodBrowser-nameAndAvatarContainer"
+    title="Unable to load profile"
+  >
+    <div
+      class="PodBrowser-root PodBrowser-circle PodBrowser-avatar PodBrowser-colorDefault"
+    >
+      <svg
+        aria-hidden="true"
+        class="PodBrowser-root PodBrowser-fallback"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </div>
+    <p
+      class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+      data-testid="agent-webid"
+    />
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AddAgentRow with existing contacts renders a row with the agent's name if profile is available 1`] = `
+<DocumentFragment>
+  <div
+    class="PodBrowser-nameAndAvatarContainer"
+    title="https://somewebid.org"
+  >
+    <div
+      class="PodBrowser-root PodBrowser-circle PodBrowser-avatar PodBrowser-colorDefault"
+    >
+      <svg
+        aria-hidden="true"
+        class="PodBrowser-root PodBrowser-fallback"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </div>
+    <p
+      class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+      data-testid="agent-webid"
+    >
+      Example
+    </p>
+  </div>
+</DocumentFragment>
+`;

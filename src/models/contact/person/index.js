@@ -19,20 +19,25 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+/* eslint no-use-before-define:off */
+
 import { v4 as uuid } from "uuid";
-import { vcard, foaf, rdf } from "rdf-namespaces";
+import { rdf, vcard } from "rdf-namespaces";
 import {
   addStringNoLocale,
   addUrl,
   asUrl,
   createSolidDataset,
   createThing,
+  getSolidDataset,
   getSourceUrl,
   getThing,
   getUrl,
+  getUrlAll,
   saveSolidDatasetAt,
   setThing,
 } from "@inrupt/solid-client";
+import React from "react";
 import {
   getSchemaOperations,
   mapSchema,
@@ -40,14 +45,20 @@ import {
 } from "../../../addressBook";
 import { joinPath } from "../../../stringHelpers";
 import { getContactAll } from "../index";
-// eslint-disable-next-line import/no-cycle
-import { getProfilesForPersonContacts } from "../../profile";
+import {
+  getPersonName,
+  getPersonPhotoUrl,
+  getProfilesForPersonContactsOld,
+  getWebIdUrl,
+} from "../../profile";
 import { chain, defineThing } from "../../../solidClientHelpers/utils";
 import { updateOrCreateDataset } from "../../dataset";
 import {
   addContactIndexToAddressBook,
   getContactIndexUrl,
 } from "../collection";
+import { getBaseUrl } from "../../../solidClientHelpers/resource";
+import { EXTERNAL_CONTACT } from "../external";
 
 /**
  * Person contacts represent the agents of type vcard:Individual, foaf:Person, schema:Person
@@ -64,26 +75,29 @@ export const PERSON_CONTACT = {
   indexFile: PEOPLE_INDEX_FILE,
   indexFilePredicate: NAME_EMAIL_INDEX_PREDICATE,
   contactTypeUrl: vcard.Individual,
-  isOfType: (contact) => !!getUrl(contact, vcardExtras("inAddressBook")),
+  isOfType: (thing) =>
+    !!getUrl(thing, vcardExtras("inAddressBook")) ||
+    getUrlAll(thing, rdf.type).includes(vcard.Individual),
+  searchNoResult: "No people found",
+  getOriginalUrl: (contact) => getWebIdUrl(contact),
+  getName: (contact) => getPersonName(contact),
+  getAvatarProps: (contact) => getPersonAvatarProps(contact),
 };
 
 /* Model functions */
+export function getPersonAvatarProps(contact) {
+  return {
+    icon: "user",
+    src: getPersonPhotoUrl(contact),
+  };
+}
+
 export function createPersonDatasetUrl(addressBook, id = uuid()) {
   return joinPath(addressBook.containerUrl, PERSON_CONTAINER, id, INDEX_FILE);
 }
 
 export async function getPersonAll(addressBook, fetch) {
   return getContactAll(addressBook, [PERSON_CONTACT], fetch);
-}
-
-export function getWebIdUrl(dataset, iri) {
-  const thing = getThing(dataset, iri);
-  const webIdNodeUrl = getUrl(thing, vcard.url);
-  if (webIdNodeUrl) {
-    const webIdNode = getThing(dataset, webIdNodeUrl);
-    return webIdNode && getUrl(webIdNode, vcard.value);
-  }
-  return getUrl(thing, foaf.openid);
 }
 
 export function createWebIdNode(webId, iri) {
@@ -96,14 +110,16 @@ export function createWebIdNode(webId, iri) {
   return { webIdNode, webIdNodeUrl };
 }
 
-function createPersonContact(addressBook, contact) {
+// Deprecated
+// TODO: We want to write out the uses of schema - avoid this if you can
+function createPersonContactWithSchema(addressBook, contactSchema) {
   const { containerUrl: addressBookContainerUrl } = addressBook;
 
   const normalizedContact = {
     emails: [],
     addresses: [],
     telephones: [],
-    ...contact,
+    ...contactSchema,
   };
 
   const id = uuid();
@@ -113,8 +129,8 @@ function createPersonContact(addressBook, contact) {
     id,
     INDEX_FILE
   );
-  const { webIdNode, webIdNodeUrl } = createWebIdNode(contact.webId, iri);
-  const rootAttributeFns = getSchemaOperations(contact, webIdNodeUrl);
+  const { webIdNode, webIdNodeUrl } = createWebIdNode(contactSchema.webId, iri);
+  const rootAttributeFns = getSchemaOperations(contactSchema, webIdNodeUrl);
   const emails = normalizedContact.emails.map(mapSchema("email"));
   const addresses = normalizedContact.addresses.map(mapSchema("address"));
   const telephones = normalizedContact.telephones.map(mapSchema("telephone"));
@@ -147,9 +163,11 @@ function createPersonContact(addressBook, contact) {
   };
 }
 
-export async function savePerson(addressBook, contactSchema, fetch) {
+// Deprecated
+// TODO: We want to write out the uses of schema - avoid this if you can
+export async function savePersonWithSchema(addressBook, contactSchema, fetch) {
   const indexIri = asUrl(addressBook.thing);
-  const newContact = createPersonContact(addressBook, contactSchema);
+  const newContact = createPersonContactWithSchema(addressBook, contactSchema);
   const { iri, dataset } = newContact;
   const personDataset = await saveSolidDatasetAt(iri, dataset, { fetch });
   const personThing = defineThing(
@@ -181,6 +199,7 @@ export async function savePerson(addressBook, contactSchema, fetch) {
     person: {
       dataset: personDataset,
       thing: personThing,
+      type: PERSON_CONTACT,
     },
     personIndex: indexDataset,
   };
@@ -192,7 +211,26 @@ export async function findPersonContactInAddressBook(
   fetch
 ) {
   const people = await getPersonAll(addressBook, fetch);
-  const profiles = await getProfilesForPersonContacts(people, fetch);
-  const existingContact = profiles.filter((profile) => profile.webId === webId);
-  return existingContact;
+  const profiles = await getProfilesForPersonContactsOld(people, fetch);
+  return profiles.filter((profile) => profile.webId === webId);
+}
+
+export async function getProfileForContactThing(contactThing, fetch) {
+  const localProfileUrl = asUrl(contactThing);
+  const localProfileDatasetUrl = getBaseUrl(localProfileUrl);
+  const localProfileDataset = await getSolidDataset(localProfileDatasetUrl, {
+    fetch,
+  });
+  const localProfileThing = getThing(localProfileDataset, localProfileUrl);
+  const webIdUrl = getWebIdUrl({
+    dataset: localProfileDataset,
+    thing: localProfileThing,
+  });
+  const dataset = await getSolidDataset(webIdUrl, { fetch });
+  const thing = getThing(dataset, webIdUrl);
+  return {
+    dataset,
+    thing,
+    type: EXTERNAL_CONTACT,
+  };
 }

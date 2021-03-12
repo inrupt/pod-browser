@@ -39,7 +39,10 @@ export function GroupProvider({ children }) {
   const groupUrl =
     router.query.iri ||
     (sortedGroups && sortedGroups[0] ? getGroupUrl(sortedGroups[0]) : null); // TODO: Tried sortedGroup?[0] ? ... : ..., but ESLint don't accept it
-  const group = useGroup(groupUrl);
+  const group = useGroup(groupUrl, {
+    revalidateOnFocus: false,
+    errorRetryCount: 0,
+  });
   return (
     <GroupContext.Provider value={group}>{children}</GroupContext.Provider>
   );

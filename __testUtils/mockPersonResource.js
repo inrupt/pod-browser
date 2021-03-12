@@ -24,6 +24,7 @@ import {
   addUrl,
   asUrl,
   mockThingFrom,
+  setUrl,
 } from "@inrupt/solid-client";
 import { vcard, foaf, rdf, space } from "rdf-namespaces";
 import { chain } from "../src/solidClientHelpers/utils";
@@ -57,6 +58,7 @@ export const aliceAlternativeWebIdUrl = "https://alice2.example.org/card#me";
 export function mockPersonDatasetAlice(...operations) {
   return chain(
     mockThingFrom(aliceWebIdUrl),
+    (t) => setUrl(t, rdf.type, vcard.Individual),
     (t) => addStringNoLocale(t, vcard.fn, aliceName),
     (t) => addStringNoLocale(t, vcard.nickname, aliceNick),
     (t) => addUrl(t, vcard.hasPhoto, alicePhoto),
@@ -82,6 +84,7 @@ export const bobAlternateWebIdUrl = "https://bob2.example.org/card#me";
 export function mockPersonDatasetBob() {
   return chain(
     mockThingFrom(bobWebIdUrl),
+    (t) => setUrl(t, rdf.type, vcard.Individual),
     (t) => addStringNoLocale(t, foaf.name, bobName),
     (t) => addStringNoLocale(t, foaf.nick, bobNick),
     (t) => addUrl(t, rdf.type, foaf.Person),

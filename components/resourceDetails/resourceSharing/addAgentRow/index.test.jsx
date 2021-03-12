@@ -25,14 +25,14 @@ import { useSession, useThing } from "@inrupt/solid-ui-react";
 import { addUrl, createThing } from "@inrupt/solid-client";
 import AddAgentRow from "./index";
 import { renderWithTheme } from "../../../../__testUtils/withTheme";
-import useContactProfile from "../../../../src/hooks/useContactProfile";
+import useContactProfileOld from "../../../../src/hooks/useContactProfileOld";
 import { vcardExtras } from "../../../../src/addressBook";
 
 jest.mock("@inrupt/solid-ui-react");
 const mockedThingHook = useThing;
 
-jest.mock("../../../../src/hooks/useContactProfile");
-const mockedUseContactProfile = useContactProfile;
+jest.mock("../../../../src/hooks/useContactProfileOld");
+const mockedUseContactProfileOld = useContactProfileOld;
 
 describe("AddAgentRow", () => {
   describe("when adding a new webId", () => {
@@ -40,7 +40,7 @@ describe("AddAgentRow", () => {
     beforeEach(() => {
       mockedThingHook.mockReturnValue({ thing: mockThing });
       useSession.mockReturnValue({ fetch: jest.fn() });
-      mockedUseContactProfile.mockReturnValue({ data: null });
+      mockedUseContactProfileOld.mockReturnValue({ data: null });
     });
     const index = 0;
     const setNewAgentsWebIds = jest.fn();
@@ -143,7 +143,7 @@ describe("AddAgentRow", () => {
     it("renders a row with the agent's name if profile is available", () => {
       const mockThing = createThing();
       mockedThingHook.mockReturnValue({ thing: mockThing });
-      mockedUseContactProfile.mockReturnValue({
+      mockedUseContactProfileOld.mockReturnValue({
         data: { webId: "https://somewebid.org", name: "Example", avatar: null },
       });
       const { asFragment, getByTestId, queryByText } = renderWithTheme(
@@ -169,7 +169,7 @@ describe("AddAgentRow", () => {
         "https://somewebid.com"
       );
       mockedThingHook.mockReturnValue({ thing: mockThing });
-      mockedUseContactProfile.mockReturnValue({
+      mockedUseContactProfileOld.mockReturnValue({
         data: null,
       });
       const { asFragment, getByTestId, queryByText } = renderWithTheme(

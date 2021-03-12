@@ -28,9 +28,14 @@ import { useBem } from "@solid/lit-prism-patterns";
 import styles from "./styles";
 import GroupContext from "../../src/contexts/groupContext";
 import Spinner from "../spinner";
-import { getGroupDescription, getGroupName } from "../../src/models/group";
+import {
+  getGroupDescription,
+  getGroupMemberUrlAll,
+  getGroupName,
+} from "../../src/models/group";
 import GroupDetailsActionButton from "./groupDetailsActionButton";
 import GroupAllContext from "../../src/contexts/groupAllContext";
+import GroupAddMembersButton from "./groupAddMembersButton";
 
 export const TESTCAFE_ID_GROUP_DETAILS = "group-details";
 export const TESTCAFE_ID_GROUP_DETAILS_BACK_LINK = "group-details-back-link";
@@ -54,49 +59,65 @@ export default function GroupDetails() {
   if (loading) return <Spinner />;
 
   const groupDescription = getGroupDescription(group);
+  const members = getGroupMemberUrlAll(group);
   return (
-    <div
-      data-testid={TESTCAFE_ID_GROUP_DETAILS}
-      className={bem("group-details")}
-    >
-      <div className={bem("group-details__main-content")}>
-        <Link href="/groups">
-          <LinkButton
-            variant="text"
-            iconBefore="caret-left"
-            className={bem("group-details__back-link")}
-            data-testid={TESTCAFE_ID_GROUP_DETAILS_BACK_LINK}
-          >
-            All Groups
-          </LinkButton>
-        </Link>
-        <Content>
-          <h1
-            className={bem("group-details__title")}
-            data-testid={TESTCAFE_ID_GROUP_DETAILS_NAME}
-          >
-            {getGroupName(group)}
-          </h1>
-          {groupDescription ? (
-            <p
-              className={bem("group-details__description")}
-              data-testid={TESTCAFE_ID_GROUP_DETAILS_DESCRIPTION}
+    <>
+      <div
+        data-testid={TESTCAFE_ID_GROUP_DETAILS}
+        className={bem("group-details")}
+      >
+        <div className={bem("group-details__main-content")}>
+          <Link href="/groups">
+            <LinkButton
+              variant="text"
+              iconBefore="caret-left"
+              className={bem("group-details__back-link")}
+              data-testid={TESTCAFE_ID_GROUP_DETAILS_BACK_LINK}
             >
-              {groupDescription}
-            </p>
-          ) : (
-            <p
-              className={bem("group-details__description", "fallback")}
-              data-testid={TESTCAFE_ID_GROUP_DETAILS_DESCRIPTION}
+              All Groups
+            </LinkButton>
+          </Link>
+          <Content>
+            <h1
+              className={bem("group-details__title")}
+              data-testid={TESTCAFE_ID_GROUP_DETAILS_NAME}
             >
-              {MESSAGE_GROUP_DETAILS_DESCRIPTION_FALLBACK}
-            </p>
-          )}
-        </Content>
+              {getGroupName(group)}
+            </h1>
+            {groupDescription ? (
+              <p
+                className={bem("group-details__description")}
+                data-testid={TESTCAFE_ID_GROUP_DETAILS_DESCRIPTION}
+              >
+                {groupDescription}
+              </p>
+            ) : (
+              <p
+                className={bem("group-details__description", "fallback")}
+                data-testid={TESTCAFE_ID_GROUP_DETAILS_DESCRIPTION}
+              >
+                {MESSAGE_GROUP_DETAILS_DESCRIPTION_FALLBACK}
+              </p>
+            )}
+          </Content>
+          <div>
+            <GroupAddMembersButton />
+          </div>
+        </div>
+        <GroupDetailsActionButton
+          className={bem("group-details__action-button")}
+        />
       </div>
-      <GroupDetailsActionButton
-        className={bem("group-details__action-button")}
-      />
-    </div>
+      <div>
+        <h2>Temporary: Group members (only URL for now)</h2>
+        <ul>
+          {members.map((url) => (
+            <li key={url} style={{ wordBreak: "break-word" }}>
+              {url}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </>
   );
 }

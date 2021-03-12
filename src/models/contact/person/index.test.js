@@ -21,7 +21,15 @@
 
 import { v4 as uuid } from "uuid";
 import * as solidClientFns from "@inrupt/solid-client";
-import { mockSolidDatasetFrom } from "@inrupt/solid-client";
+import {
+  getSourceUrl,
+  getThing,
+  mockSolidDatasetFrom,
+  mockThingFrom,
+  setThing,
+  setUrl,
+} from "@inrupt/solid-client";
+import { vcard } from "rdf-namespaces/dist/index";
 import {
   aliceAlternativeWebIdUrl,
   aliceWebIdUrl,
@@ -34,9 +42,10 @@ import {
   PERSON_CONTACT,
   createPersonDatasetUrl,
   findPersonContactInAddressBook,
-  getWebIdUrl,
   getPersonAll,
-  savePerson,
+  savePersonWithSchema,
+  getPersonAvatarProps,
+  getProfileForContactThing,
 } from "./index";
 import * as contactModel from "..";
 import * as profileModel from "../../profile";
@@ -48,13 +57,12 @@ import mockPersonContact, {
   addPersonToMockedIndexDataset,
 } from "../../../../__testUtils/mockPersonContact";
 import { getContactIndexDefaultUrl } from "../collection";
-// import { fetchProfile } from "../../../solidClientHelpers/profile";
+import { getWebIdUrl } from "../../profile";
+import { getBaseUrl } from "../../../solidClientHelpers/resource";
+import { EXTERNAL_CONTACT } from "../external";
 
 jest.mock("uuid");
 const mockedUuid = uuid;
-
-// jest.mock("../../../solidClientHelpers/profile");
-// const mockedFetchProfile = fetchProfile;
 
 const containerUrl = "https://example.com/contacts/";
 const emptyAddressBook = mockAddressBook({ containerUrl });
@@ -64,6 +72,8 @@ const fetch = jest.fn();
 const person1DatasetUrl = "https://example.com/contacts/Person/1234/index.ttl";
 const person1Url = `${person1DatasetUrl}#this`;
 const person1Name = "Person 1";
+const person1OriginalUrl = aliceWebIdUrl;
+const person1OriginalDatasetUrl = getBaseUrl(aliceWebIdUrl);
 
 const person2DatasetUrl = "https://example.com/contacts/Person/5678/index.ttl";
 const person2Url = `${person2DatasetUrl}#this`;
@@ -78,11 +88,46 @@ const addressBookWithPeopleIndex = addIndexToMockedAddressBook(
   PERSON_CONTACT,
   { indexUrl: peopleIndexDatasetUrl }
 );
-const person1 = mockPersonContact(emptyAddressBook, person1Url, person1Name);
+const person1 = mockPersonContact(emptyAddressBook, person1Url, person1Name, {
+  originalUrl: person1OriginalUrl,
+});
 
-describe("isOfType", () => {
-  it("returns true if contact is a group", () => {
-    expect(PERSON_CONTACT.isOfType(person1.thing)).toBe(true);
+describe("PERSON_CONTACT", () => {
+  describe("isOfType", () => {
+    it("returns true if contact is a group", () => {
+      expect(PERSON_CONTACT.isOfType(person1.thing)).toBe(true);
+    });
+  });
+
+  describe("getOriginalUrl", () => {
+    it("returns original URL for person", () => {
+      expect(PERSON_CONTACT.getOriginalUrl(person1)).toEqual(
+        person1OriginalUrl
+      );
+    });
+  });
+
+  describe("getName", () => {
+    it("returns name", () => {
+      expect(PERSON_CONTACT.getName(person1)).toEqual(person1Name);
+    });
+  });
+
+  describe("getAvatarProps", () => {
+    it("returns props for Avatar component", () => {
+      expect(PERSON_CONTACT.getAvatarProps(person1)).toEqual(
+        getPersonAvatarProps(person1)
+      );
+    });
+  });
+});
+
+describe("getPersonAvatarProps", () => {
+  it("returns props for Avatar component", () => {
+    expect(getPersonAvatarProps(person1)).toEqual({
+      icon: "user",
+      src: null,
+    });
   });
 });
 
@@ -125,20 +170,32 @@ describe("getPersonAll", () => {
 });
 
 describe("getWebIdUrl", () => {
-  it("returns the webId for a given person dataset", () => {
-    const webIdUrl = "http://example.com/alice#me";
+  const webIdUrl = "http://example.com/alice#me";
+
+  it("returns the webId for a given person dataset with a webIdNode", () => {
     const { webIdNode } = mockWebIdNode(webIdUrl, aliceAlternativeWebIdUrl);
+    const dataset = mockPersonDatasetAlice();
+    const thing = setUrl(
+      getThing(dataset, aliceWebIdUrl),
+      vcard.url,
+      webIdNode
+    );
     const personDataset = chain(
       mockSolidDatasetFrom("http://example.com/alice"),
-      (d) => solidClientFns.setThing(d, mockPersonDatasetAlice()),
-      (d) => solidClientFns.setThing(d, webIdNode)
+      (d) => setThing(d, thing),
+      (d) => setThing(d, webIdNode)
     );
+    const person = {
+      dataset: personDataset,
+      thing,
+      type: PERSON_CONTACT,
+    };
 
-    expect(getWebIdUrl(personDataset, aliceWebIdUrl)).toEqual(webIdUrl);
+    expect(getWebIdUrl(person)).toEqual(webIdUrl);
   });
 });
 
-describe("savePerson", () => {
+describe("savePersonWithSchema", () => {
   const contactSchema = {
     webId: "https://example.org/profile/card#me",
     fn: "Example",
@@ -150,7 +207,8 @@ describe("savePerson", () => {
   const mockedPerson = mockPersonContact(
     emptyAddressBook,
     person1Url,
-    "Example"
+    "Example",
+    { originalUrl: null }
   );
 
   let mockedSaveSolidDatasetAt;
@@ -173,7 +231,7 @@ describe("savePerson", () => {
         type: PERSON_CONTACT,
       });
 
-    const { addressBook, person } = await savePerson(
+    const { addressBook, person } = await savePersonWithSchema(
       addressBookWithPeopleIndex,
       contactSchema,
       fetch
@@ -195,7 +253,7 @@ describe("savePerson", () => {
       .mockResolvedValueOnce(mockedPerson.dataset)
       .mockResolvedValueOnce(mockSolidDatasetFrom(peopleIndexDatasetUrl));
 
-    const { addressBook, person } = await savePerson(
+    const { addressBook, person } = await savePersonWithSchema(
       addressBookWithPeopleIndex,
       contactSchemaWithName,
       fetch
@@ -217,7 +275,7 @@ describe("savePerson", () => {
       .mockResolvedValueOnce(mockedPerson.dataset)
       .mockResolvedValueOnce(addressBookWithPeopleIndex);
 
-    const { addressBook, person } = await savePerson(
+    const { addressBook, person } = await savePersonWithSchema(
       addressBookWithPeopleIndex,
       contactSchema,
       fetch
@@ -239,7 +297,7 @@ describe("savePerson", () => {
       { fetch }
     );
     const updatedDataset = mockedSaveSolidDatasetAt.mock.calls[1][1];
-    expect(solidClientFns.getSourceUrl(updatedDataset)).toEqual(
+    expect(getSourceUrl(updatedDataset)).toEqual(
       getContactIndexDefaultUrl(containerUrl, PERSON_CONTACT)
     );
   });
@@ -265,7 +323,7 @@ describe("findPersonContactInAddressBook", () => {
   beforeEach(() => {
     jest.spyOn(contactModel, "getContactAll").mockResolvedValue(people);
     jest
-      .spyOn(profileModel, "getProfilesForPersonContacts")
+      .spyOn(profileModel, "getProfilesForPersonContactsOld")
       .mockResolvedValue(profiles);
   });
 
@@ -282,5 +340,26 @@ describe("findPersonContactInAddressBook", () => {
     await expect(
       findPersonContactInAddressBook(addressBook, webId2, fetch)
     ).resolves.toEqual([]);
+  });
+});
+
+describe("getProfileForContactThing", () => {
+  it("loads the original (probably external) profile", async () => {
+    const externalProfileDataset = mockPersonDatasetAlice();
+    const externalProfileThing = getThing(
+      externalProfileDataset,
+      person1OriginalUrl
+    );
+    const mockedGetSolidDataset = jest
+      .spyOn(solidClientFns, "getSolidDataset")
+      .mockResolvedValueOnce(person1.dataset)
+      .mockResolvedValueOnce(externalProfileDataset);
+    await expect(
+      getProfileForContactThing(person1.thing, fetch)
+    ).resolves.toEqual({
+      dataset: externalProfileDataset,
+      thing: externalProfileThing,
+      type: EXTERNAL_CONTACT,
+    });
   });
 });

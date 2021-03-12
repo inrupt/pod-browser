@@ -43,7 +43,7 @@ import styles from "./styles";
 import { chain } from "../../../../src/solidClientHelpers/utils";
 import { fetchProfile } from "../../../../src/solidClientHelpers/profile";
 import { vcardExtras } from "../../../../src/addressBook";
-import useContactProfile from "../../../../src/hooks/useContactProfile";
+import useContactProfileOld from "../../../../src/hooks/useContactProfileOld";
 
 const useStyles = makeStyles((theme) => createStyles(styles(theme)));
 const VCARD_WEBID_PREDICATE = vcardExtras("WebId");
@@ -92,7 +92,7 @@ export default function AddAgentRow({
   const [agentName, setAgentName] = useState(null);
   const [agentAvatar, setAgentAvatar] = useState(null);
   const [displayedWebId, setDisplayedWebId] = useState(null);
-  const { data: profile } = useContactProfile(temporaryRowThing);
+  const { data: profile } = useContactProfileOld(temporaryRowThing);
   useEffect(() => {
     if (profile) {
       setAgentName(profile.name);

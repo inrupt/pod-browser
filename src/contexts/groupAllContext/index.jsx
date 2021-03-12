@@ -29,7 +29,10 @@ const GroupAllContext = createContext(null);
 export default GroupAllContext;
 
 export function GroupAllProvider({ children }) {
-  const groups = useContacts([GROUP_CONTACT]);
+  const groups = useContacts([GROUP_CONTACT], {
+    revalidateOnFocus: false,
+    errorRetryCount: 0,
+  });
   return (
     <GroupAllContext.Provider value={groups}>
       {children}

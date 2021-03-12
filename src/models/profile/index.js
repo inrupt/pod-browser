@@ -19,27 +19,53 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { asUrl } from "@inrupt/solid-client";
+import {
+  asUrl,
+  getStringNoLocale,
+  getThing,
+  getUrl,
+} from "@inrupt/solid-client";
+import { foaf, vcard } from "rdf-namespaces";
 import { fetchProfile } from "../../solidClientHelpers/profile";
 import { getResource } from "../../solidClientHelpers/resource";
-// eslint-disable-next-line import/no-cycle
-import { getWebIdUrl } from "../contact/person";
+import { getWebIdUrl as getWebIdUrlOld } from "../../addressBook";
 
 /* Model constants */
 
 /* Model functions */
+export function getWebIdUrl(contact) {
+  const { dataset, thing } = contact;
+  const webIdNodeUrl = getUrl(thing, vcard.url);
+  if (webIdNodeUrl) {
+    const webIdNode = getThing(dataset, webIdNodeUrl);
+    return webIdNode && getUrl(webIdNode, vcard.value);
+  }
+  return getUrl(thing, foaf.openid);
+}
 
-export async function getProfileForContact(personContactUrl, fetch) {
+export async function getProfileForContactOld(personContactUrl, fetch) {
   const {
     response: { dataset, iri },
   } = await getResource(personContactUrl, fetch);
-  const webId = getWebIdUrl(dataset, iri);
+  const webId = getWebIdUrlOld(dataset, iri);
   const fetchedProfile = await fetchProfile(webId, fetch);
   return fetchedProfile;
 }
-export async function getProfilesForPersonContacts(people, fetch) {
+
+export async function getProfilesForPersonContactsOld(people, fetch) {
   const responses = await Promise.all(
-    people.map(({ thing }) => getProfileForContact(asUrl(thing), fetch))
+    people.map(({ thing }) => getProfileForContactOld(asUrl(thing), fetch))
   );
   return responses.filter((profile) => profile);
+}
+
+export function getPersonPhotoUrl(person) {
+  return getUrl(person.thing, vcard.hasPhoto);
+}
+
+export function getPersonName(person) {
+  return (
+    getStringNoLocale(person.thing, vcard.fn) ||
+    getStringNoLocale(person.thing, foaf.name)
+  );
 }

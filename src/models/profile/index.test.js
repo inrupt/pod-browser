@@ -43,7 +43,10 @@ import {
 } from "../../../__testUtils/mockPersonResource";
 import mockPersonContactThing from "../../../__testUtils/mockPersonContactThing";
 import { chain } from "../../solidClientHelpers/utils";
-import { getProfileForContact, getProfilesForPersonContacts } from "./index";
+import {
+  getProfileForContactOld,
+  getProfilesForPersonContactsOld,
+} from "./index";
 import { fetchProfile } from "../../solidClientHelpers/profile";
 
 jest.mock("../../solidClientHelpers/profile");
@@ -131,7 +134,7 @@ describe("getProfilesForPersonContacts", () => {
         name: "Bob",
       });
 
-    const [profile1, profile2] = await getProfilesForPersonContacts(
+    const [profile1, profile2] = await getProfilesForPersonContactsOld(
       [person1, person2],
       fetch
     );
@@ -205,7 +208,7 @@ describe("getProfilesForPersonContacts", () => {
       name: "Alice",
     });
 
-    const profiles = await getProfilesForPersonContacts(
+    const profiles = await getProfilesForPersonContactsOld(
       [person1, person2],
       fetch
     );
@@ -214,7 +217,7 @@ describe("getProfilesForPersonContacts", () => {
   });
 });
 
-describe("getProfileForContact", () => {
+describe("getProfileForContactOld", () => {
   beforeEach(() => {
     jest.spyOn(resourceFns, "getResource").mockResolvedValue({
       response: { dataset: mockPersonDatasetAlice(), iri: aliceWebIdUrl },
@@ -225,6 +228,8 @@ describe("getProfileForContact", () => {
   });
   const person1Iri = "https://user.example.com/contacts/Person/1234/index.ttl";
   it("returns a profile for a person contact url", async () => {
-    expect(await getProfileForContact(person1Iri)).toEqual(mockProfileAlice());
+    expect(await getProfileForContactOld(person1Iri)).toEqual(
+      mockProfileAlice()
+    );
   });
 });

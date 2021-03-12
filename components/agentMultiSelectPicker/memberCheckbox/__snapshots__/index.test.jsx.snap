@@ -1,0 +1,35 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`WebIdCheckbox renders a checkbox with the corrext value 1`] = `
+<DocumentFragment>
+  <span
+    aria-disabled="false"
+    class="PodBrowser-root PodBrowser-root PodBrowser-root PodBrowser-root PodBrowser-colorPrimary PodBrowser-colorPrimary"
+  >
+    <span
+      class="PodBrowser-label"
+    >
+      <input
+        class="PodBrowser-input"
+        data-indeterminate="false"
+        data-testid="webid-checkbox"
+        type="checkbox"
+        value="https://somewebid.com"
+      />
+      <svg
+        aria-hidden="true"
+        class="PodBrowser-root"
+        focusable="false"
+        viewBox="0 0 24 24"
+      >
+        <path
+          d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"
+        />
+      </svg>
+    </span>
+    <span
+      class="PodBrowser-root"
+    />
+  </span>
+</DocumentFragment>
+`;

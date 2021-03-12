@@ -22,10 +22,10 @@
 import React from "react";
 import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../../../../__testUtils/withTheme";
-import useContactProfile from "../../../../../src/hooks/useContactProfile";
+import useContactProfileOld from "../../../../../src/hooks/useContactProfileOld";
 import WebIdCheckbox, { TESTCAFE_ID_WEBID_CHECKBOX } from "./index";
 
-jest.mock("../../../../../src/hooks/useContactProfile");
+jest.mock("../../../../../src/hooks/useContactProfileOld");
 
 const webId = "https://somewebid.com";
 
@@ -38,7 +38,7 @@ describe("WebIdCheckbox", () => {
   const webIdsInPermissions = [];
   const webIdsToDelete = [];
   test("renders a checkbox with the corrext value", () => {
-    useContactProfile.mockReturnValue({ data: null });
+    useContactProfileOld.mockReturnValue({ data: null });
 
     const { asFragment, getByTestId } = renderWithTheme(
       <WebIdCheckbox
@@ -57,7 +57,7 @@ describe("WebIdCheckbox", () => {
     expect(checkbox).toHaveAttribute("value", webId);
   });
   test("checkbox has the correct value if profile is available", () => {
-    useContactProfile.mockReturnValue({
+    useContactProfileOld.mockReturnValue({
       data: { webId: "https://example.org" },
     });
     const { getByTestId } = renderWithTheme(
@@ -76,7 +76,7 @@ describe("WebIdCheckbox", () => {
     expect(checkbox).toHaveAttribute("value", "https://example.org");
   });
   test("checkbox has a null value if value is unavailable and it's the first row", () => {
-    useContactProfile.mockReturnValue({
+    useContactProfileOld.mockReturnValue({
       data: null,
     });
     const { getByTestId } = renderWithTheme(
@@ -95,7 +95,7 @@ describe("WebIdCheckbox", () => {
     expect(checkbox).toHaveAttribute("value", "");
   });
   test("checkbox is checked if agent is already in permissions", () => {
-    useContactProfile.mockReturnValue({
+    useContactProfileOld.mockReturnValue({
       data: { webId },
     });
     const { getByTestId } = renderWithTheme(
@@ -114,7 +114,7 @@ describe("WebIdCheckbox", () => {
     expect(checkbox).toBeChecked();
   });
   test("calls toggleCheckbox on click with the correct values", () => {
-    useContactProfile.mockReturnValue({
+    useContactProfileOld.mockReturnValue({
       data: { webId },
     });
     const { getByTestId } = renderWithTheme(

@@ -23,7 +23,10 @@ import useSWR from "swr";
 import { useSession } from "@inrupt/solid-ui-react";
 import { getGroup } from "../../models/group";
 
-export default function useGroup(groupUrl) {
+export default function useGroup(
+  groupUrl,
+  swrOptions = { errorRetryCount: 0 }
+) {
   const { fetch } = useSession();
   return useSWR(
     ["group", groupUrl],
@@ -31,8 +34,6 @@ export default function useGroup(groupUrl) {
       if (!groupUrl) return null;
       return getGroup(groupUrl, fetch);
     },
-    {
-      errorRetryCount: 0,
-    }
+    swrOptions
   );
 }

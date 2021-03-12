@@ -27,16 +27,24 @@ import {
   setThing,
   setUrl,
 } from "@inrupt/solid-client";
-import { vcard } from "rdf-namespaces";
+import { foaf, vcard } from "rdf-namespaces";
 import { chain } from "../src/solidClientHelpers/utils";
 import { vcardExtras } from "../src/addressBook";
 import { getBaseUrl } from "../src/solidClientHelpers/resource";
+import { PERSON_CONTACT } from "../src/models/contact/person";
+import { aliceWebIdUrl } from "./mockPersonResource";
 
-function mockContactPersonThing(addressBook, personThingUrl, name) {
+function mockContactPersonThing(
+  addressBook,
+  personThingUrl,
+  name,
+  originalUrl = aliceWebIdUrl
+) {
   return chain(
     mockThingFrom(personThingUrl),
     (t) => setStringNoLocale(t, vcard.fn, name),
-    (t) => setUrl(t, vcardExtras("inAddressBook"), asUrl(addressBook.thing))
+    (t) => setUrl(t, vcardExtras("inAddressBook"), asUrl(addressBook.thing)),
+    ...(originalUrl ? [(t) => setUrl(t, foaf.openid, originalUrl)] : [])
   );
 }
 
@@ -45,18 +53,37 @@ export function addPersonToMockedIndexDataset(
   dataset,
   addressBook,
   name,
-  personThingUrl
+  personThingUrl,
+  options = {}
 ) {
   return chain(dataset, (d) =>
-    setThing(d, mockContactPersonThing(addressBook, personThingUrl, name))
+    setThing(
+      d,
+      mockContactPersonThing(
+        addressBook,
+        personThingUrl,
+        name,
+        options.originalUrl
+      )
+    )
   );
 }
 
-export default function mockPersonContact(addressBook, personThingUrl, name) {
-  const thing = mockContactPersonThing(addressBook, personThingUrl, name);
+export default function mockPersonContact(
+  addressBook,
+  personThingUrl,
+  name,
+  options = {}
+) {
+  const thing = mockContactPersonThing(
+    addressBook,
+    personThingUrl,
+    name,
+    options.originalUrl
+  );
   const dataset = setThing(
     mockSolidDatasetFrom(getBaseUrl(personThingUrl)),
     thing
   );
-  return { dataset, thing };
+  return { dataset, thing, type: PERSON_CONTACT };
 }

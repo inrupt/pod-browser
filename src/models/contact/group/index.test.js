@@ -130,10 +130,31 @@ beforeEach(() => {
     .mockImplementation((url) => mockSolidDatasetFrom(url));
 });
 
-describe("isOfType", () => {
-  it("returns true if contact is a group", () => {
-    const { thing: mockGroupThing } = mockGroup(group1Name, group1Url);
-    expect(GROUP_CONTACT.isOfType(mockGroupThing)).toBe(true);
+describe("GROUP_CONTACT", () => {
+  describe("isOfType", () => {
+    it("returns true if contact is a group", () => {
+      expect(GROUP_CONTACT.isOfType(mockedGroup1.thing)).toBe(true);
+    });
+  });
+
+  describe("getOriginalUrl", () => {
+    it("returns original URL for group", () => {
+      expect(GROUP_CONTACT.getOriginalUrl(mockedGroup1)).toEqual(group1Url);
+    });
+  });
+
+  describe("getName", () => {
+    it("returns name of group", () => {
+      expect(GROUP_CONTACT.getName(mockedGroup1)).toEqual(group1Name);
+    });
+  });
+
+  describe("getAvatarProps", () => {
+    it("returns props for Avatar component", () => {
+      expect(GROUP_CONTACT.getAvatarProps(mockedGroup1)).toEqual({
+        icon: "users",
+      });
+    });
   });
 });
 

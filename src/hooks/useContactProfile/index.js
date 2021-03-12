@@ -21,25 +21,18 @@
 
 import { useSession } from "@inrupt/solid-ui-react";
 import useSWR from "swr";
-import { asUrl } from "@inrupt/solid-client";
-import { getProfileForContact } from "../../models/profile";
+import { getProfileForContactThing } from "../../models/contact/person";
+import { getContactUrl } from "../../models/contact";
 
-const getPersonThingUrl = (contact) => {
-  let personThingUrl;
-  try {
-    personThingUrl = asUrl(contact);
-  } catch {
-    personThingUrl = null;
-  }
-  return personThingUrl;
-};
-
-export default function useContactProfile(contact) {
+export default function useContactProfile(contactThing, swrOptions = {}) {
   const { fetch } = useSession();
-  const personThingUrl = getPersonThingUrl(contact);
-  return useSWR(["contact", personThingUrl], async () => {
-    if (!personThingUrl) return null;
-    const profile = await getProfileForContact(personThingUrl, fetch);
-    return profile;
-  });
+  const contactUrl = getContactUrl(contactThing);
+  return useSWR(
+    ["contactProfile", contactUrl],
+    async () => {
+      if (!contactThing) return null;
+      return getProfileForContactThing(contactThing, fetch);
+    },
+    swrOptions
+  );
 }
