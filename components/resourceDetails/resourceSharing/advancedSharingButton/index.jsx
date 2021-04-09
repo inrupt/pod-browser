@@ -30,7 +30,6 @@ import { Button } from "@inrupt/prism-react-components";
 import AgentPickerModal from "../agentPickerModal";
 import styles from "./styles";
 import usePolicyPermissions from "../../../../src/hooks/usePolicyPermissions";
-import usePermissionsWithProfiles from "../../../../src/hooks/usePermissionsWithProfiles";
 
 const useStyles = makeStyles((theme) => createStyles(styles(theme)));
 
@@ -40,11 +39,7 @@ export const TESTCAFE_ID_MODAL_OVERLAY = "advanced-sharing-modal-overlay";
 export default function AdvancedSharingButton() {
   const defaultType = "viewAndAdd";
   const classes = useStyles();
-  const { data: customPermissions } = usePolicyPermissions(defaultType);
-
-  const { permissionsWithProfiles: permissions } = usePermissionsWithProfiles(
-    customPermissions
-  );
+  const { mutate: mutatePermissions } = usePolicyPermissions(defaultType);
 
   const bem = useBem(useStyles());
   const [open, setOpen] = useState(false);
@@ -84,8 +79,7 @@ export default function AdvancedSharingButton() {
         <AgentPickerModal
           type={defaultType}
           onClose={handleClose}
-          permissions={permissions}
-          setLoading={() => {}}
+          mutatePermissions={mutatePermissions}
           advancedSharing
         />
       </Modal>

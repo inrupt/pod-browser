@@ -21,7 +21,7 @@
 
 /* eslint-disable react/forbid-prop-types */
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import T from "prop-types";
 import { Button, CircularProgress, createStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
@@ -29,10 +29,9 @@ import { useBem } from "@solid/lit-prism-patterns";
 import { DatasetContext, useSession } from "@inrupt/solid-ui-react";
 import { getSourceUrl } from "@inrupt/solid-client";
 import { Alert, Skeleton } from "@material-ui/lab";
-import { PUBLIC_AGENT_PREDICATE } from "../../../../src/models/contact/public";
-import { AUTHENTICATED_AGENT_PREDICATE } from "../../../../src/models/contact/authenticated";
 import styles from "./styles";
 import { getProfile } from "../../../../src/models/profile";
+import useAgentProfile from "../../../../src/hooks/useAgentProfile";
 import AgentProfileDetails from "./agentProfileDetails";
 
 const useStyles = makeStyles((theme) => createStyles(styles(theme)));
@@ -52,40 +51,20 @@ export default function AgentAccess({ permission }) {
   const [loading, setLoading] = useState(false);
   const resourceIri = getSourceUrl(dataset);
   const [localAccess, setLocalAccess] = useState(acl);
-  const [localProfile, setLocalProfile] = useState();
-  const [localProfileError, setLocalProfileError] = useState();
 
-  useEffect(() => {
-    if (webId === PUBLIC_AGENT_PREDICATE) {
-      setLocalProfile({ name: "Anyone" });
-      setLocalProfileError(null);
-    } else if (webId === AUTHENTICATED_AGENT_PREDICATE) {
-      setLocalProfile({ name: "Anyone signed in" });
-      setLocalProfileError(null);
-    } else {
-      (async () => {
-        const { profile, profileError } = await getProfile(webId, fetch);
-        if (profile) {
-          setLocalProfile(profile);
-          setLocalProfileError(null);
-        }
-        if (profileError) {
-          setLocalProfileError(profileError);
-          setLocalProfile(null);
-        }
-      })();
-    }
-  }, [webId, fetch]);
+  const {
+    data: localProfile,
+    error: localProfileError,
+    mutate: mutateProfile,
+  } = useAgentProfile(webId);
 
   const handleRetryClick = async () => {
     const { profile, profileError } = await getProfile(webId, fetch);
     if (profile) {
-      setLocalProfile();
       setIsLoadingProfile(false);
-      setLocalProfileError(null);
+      mutateProfile(profile, true);
     }
     if (profileError) {
-      setLocalProfileError(profileError);
       setIsLoadingProfile(false);
     }
   };

@@ -20,50 +20,46 @@
  */
 
 import React from "react";
-import userEvent from "@testing-library/user-event";
 import { waitFor } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
 import { renderWithTheme } from "../../../../__testUtils/withTheme";
 import AgentAccessTable, { TESTCAFE_ID_AGENT_ACCESS_TABLE } from "./index";
 import { createAccessMap } from "../../../../src/solidClientHelpers/permissions";
 import usePolicyPermissions from "../../../../src/hooks/usePolicyPermissions";
-import { fetchProfile } from "../../../../src/solidClientHelpers/profile";
+import useAgentProfile from "../../../../src/hooks/useAgentProfile";
 import { TESTCAFE_ID_SEARCH_INPUT } from "../agentsSearchBar";
-import {
-  TESTCAFE_ID_TAB_GROUPS,
-  TESTCAFE_ID_TAB_PEOPLE,
-} from "../agentsTableTabs";
 
 jest.mock("../../../../src/hooks/usePolicyPermissions");
 const mockedUsePolicyPermissions = usePolicyPermissions;
 
-jest.mock("../../../../src/solidClientHelpers/profile");
-const mockedFetchProfile = fetchProfile;
+jest.mock("../../../../src/hooks/useAgentProfile");
+const mockedUseAgentProfile = useAgentProfile;
 
 const profile1 = {
   avatar: null,
   webId: "https://example1.com/profile/card#me",
-  name: "Example 1",
+  name: "Example A",
   types: ["https://schema.org/Person"],
 };
 
 const profile2 = {
   avatar: null,
   webId: "https://example2.com/profile/card#me",
-  name: "Example 2",
+  name: "Example B",
   types: ["https://schema.org/Person"],
 };
 
 const profile3 = {
   avatar: null,
   webId: "https://example3.com/profile/card#me",
-  name: "Example 3",
+  name: "Example C",
   types: ["https://schema.org/Person"],
 };
 
 const profile4 = {
   avatar: null,
   webId: "https://example4.com/profile/card#me",
-  name: "Example 4",
+  name: "Example D",
   types: ["https://schema.org/Person"],
 };
 
@@ -89,66 +85,35 @@ const permissions = [
     type: "agent",
   },
 ];
-
-describe("AgentAccessTable", () => {
-  it("renders an empty list of permissions if there are no permissions and the policy is not custom", () => {
-    const type = "editors";
+describe("AgentAccessTable with agents", () => {
+  beforeEach(() => {
     mockedUsePolicyPermissions.mockReturnValue({
-      data: [],
+      data: permissions,
+      mutate: jest.fn(),
     });
-    const { asFragment } = renderWithTheme(<AgentAccessTable type={type} />);
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-  it("renders an empty list of permissions if permissions are unavailable", () => {
-    const type = "editors";
-    mockedUsePolicyPermissions.mockReturnValue({
-      error: "error",
-      data: undefined,
-    });
-    const { asFragment } = renderWithTheme(<AgentAccessTable type={type} />);
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-  it("does not render table at all if there aren't any permissions for a custom policy", () => {
-    const type = "viewAndAdd";
-    mockedUsePolicyPermissions.mockReturnValue({
-      data: [],
-    });
-    const { asFragment, queryByTestId } = renderWithTheme(
-      <AgentAccessTable type={type} />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-    expect(queryByTestId(TESTCAFE_ID_AGENT_ACCESS_TABLE)).toBeNull();
+    mockedUseAgentProfile
+      .mockReturnValue({ data: profile1 })
+      .mockReturnValueOnce({ data: profile2 })
+      .mockReturnValueOnce({ data: profile3 });
   });
   it("renders a list of permissions", async () => {
-    mockedUsePolicyPermissions.mockReturnValue({
-      data: [
-        {
-          acl: createAccessMap(true, true, false, false),
-          webId: "https://example1.com/profile/card#me",
-        },
-      ],
-    });
-    mockedFetchProfile.mockReturnValue({ profile: profile1 });
     const type = "editors";
     const { asFragment, queryAllByRole } = renderWithTheme(
       <AgentAccessTable type={type} />
     );
 
-    expect(queryAllByRole("cell")).toHaveLength(1);
+    expect(queryAllByRole("cell")).toHaveLength(3);
     expect(asFragment()).toMatchSnapshot();
   });
   it("shows all permissions when clicking 'show all' button", async () => {
     mockedUsePolicyPermissions.mockReturnValue({
       data: permissions,
     });
-    mockedFetchProfile
-      .mockReturnValueOnce({ profile: profile1 })
-      .mockReturnValueOnce({ profile: profile2 })
-      .mockReturnValueOnce({ profile: profile3 })
-      .mockReturnValueOnce({ profile: profile4 });
+    mockedUseAgentProfile
+      .mockReturnValueOnce({ data: profile1 })
+      .mockReturnValueOnce({ data: profile2 })
+      .mockReturnValueOnce({ data: profile3 })
+      .mockReturnValueOnce({ data: profile4 });
 
     const type = "editors";
     const { queryAllByRole, getByTestId } = renderWithTheme(
@@ -163,11 +128,11 @@ describe("AgentAccessTable", () => {
     mockedUsePolicyPermissions.mockReturnValue({
       data: permissions,
     });
-    mockedFetchProfile
-      .mockReturnValueOnce({ profile: profile1 })
-      .mockReturnValueOnce({ profile: profile2 })
-      .mockReturnValueOnce({ profile: profile3 })
-      .mockReturnValueOnce({ profile: profile4 });
+    mockedUseAgentProfile
+      .mockReturnValueOnce({ data: profile1 })
+      .mockReturnValueOnce({ data: profile2 })
+      .mockReturnValueOnce({ data: profile3 })
+      .mockReturnValueOnce({ data: profile4 });
     const type = "editors";
     const { queryAllByRole, getByTestId } = renderWithTheme(
       <AgentAccessTable type={type} permissions={permissions} />
@@ -184,11 +149,11 @@ describe("AgentAccessTable", () => {
     mockedUsePolicyPermissions.mockReturnValue({
       data: permissions,
     });
-    mockedFetchProfile
-      .mockReturnValueOnce({ profile: profile1 })
-      .mockReturnValueOnce({ profile: profile2 })
-      .mockReturnValueOnce({ profile: profile3 })
-      .mockReturnValueOnce({ profile: profile4 });
+    mockedUseAgentProfile
+      .mockReturnValueOnce({ data: profile1 })
+      .mockReturnValueOnce({ data: profile2 })
+      .mockReturnValueOnce({ data: profile3 })
+      .mockReturnValueOnce({ data: profile4 });
     const type = "editors";
     const { getByTestId, queryByText } = renderWithTheme(
       <AgentAccessTable type={type} permissions={permissions} />
@@ -220,10 +185,10 @@ describe("AgentAccessTable", () => {
       data: permissionsWithTypes,
       mutate: jest.fn(),
     });
-    mockedFetchProfile
-      .mockReturnValueOnce({ profile: profile1 })
+    mockedUseAgentProfile
+      .mockReturnValueOnce({ data: profile1 })
       .mockReturnValueOnce({
-        profile: {
+        data: {
           avatar: null,
           name: "Not a person",
         },
@@ -261,10 +226,10 @@ describe("AgentAccessTable", () => {
       data: permissionsWithTypes,
       mutate: jest.fn(),
     });
-    mockedFetchProfile
-      .mockReturnValueOnce({ profile: profile1 })
+    mockedUseAgentProfile
+      .mockReturnValueOnce({ data: profile1 })
       .mockReturnValueOnce({
-        profile: {
+        data: {
           avatar: null,
           name: "Not a person",
           types: ["Something else"],
@@ -286,5 +251,41 @@ describe("AgentAccessTable", () => {
       expect(queryByText("Example 1")).not.toBeNull();
       expect(queryByText("Example 2")).not.toBeNull();
     });
+  });
+});
+describe("AgentAccessTable without agents", () => {
+  it("renders an empty list of permissions if there are no permissions and the policy is not custom", () => {
+    const type = "editors";
+    mockedUsePolicyPermissions.mockReturnValue({
+      data: [],
+      mutate: jest.fn(),
+    });
+    const { asFragment } = renderWithTheme(<AgentAccessTable type={type} />);
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+  it("renders an empty list of permissions if permissions are unavailable", () => {
+    const type = "editors";
+    mockedUsePolicyPermissions.mockReturnValue({
+      error: "error",
+      data: undefined,
+      mutate: jest.fn(),
+    });
+    const { asFragment } = renderWithTheme(<AgentAccessTable type={type} />);
+
+    expect(asFragment()).toMatchSnapshot();
+  });
+  it("does not render table at all if there aren't any permissions for a custom policy", () => {
+    const type = "viewAndAdd";
+    mockedUsePolicyPermissions.mockReturnValue({
+      data: [],
+      mutate: jest.fn(),
+    });
+    const { asFragment, queryByTestId } = renderWithTheme(
+      <AgentAccessTable type={type} />
+    );
+
+    expect(asFragment()).toMatchSnapshot();
+    expect(queryByTestId(TESTCAFE_ID_AGENT_ACCESS_TABLE)).toBeNull();
   });
 });
