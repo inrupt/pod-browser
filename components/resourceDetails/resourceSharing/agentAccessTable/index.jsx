@@ -74,19 +74,16 @@ export default function AgentAccessTable({ type }) {
       {
         header: "",
         accessor: "name",
-        disableSortBy: true,
         modifiers: ["align-center", "width-preview"],
       },
       {
         header: "",
         accessor: "webId",
-        disableSortBy: true,
         modifiers: ["align-center", "width-preview"],
       },
       {
         header: "",
         accessor: "type",
-        disableSortBy: true,
         modifiers: ["align-center", "width-preview"],
       },
     ],
@@ -112,7 +109,9 @@ export default function AgentAccessTable({ type }) {
     {
       columns,
       data,
-      defaultCanSort: true,
+      initialState: {
+        sortBy: [{ id: "name", desc: false }],
+      },
     },
     useFilters,
     useGlobalFilter
