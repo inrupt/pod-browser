@@ -21,8 +21,14 @@
 
 import useSWR from "swr";
 import { useSession } from "@inrupt/solid-ui-react";
-import { PUBLIC_AGENT_PREDICATE } from "../../models/contact/public";
-import { AUTHENTICATED_AGENT_PREDICATE } from "../../models/contact/authenticated";
+import {
+  PUBLIC_AGENT_NAME,
+  PUBLIC_AGENT_PREDICATE,
+} from "../../models/contact/public";
+import {
+  AUTHENTICATED_AGENT_NAME,
+  AUTHENTICATED_AGENT_PREDICATE,
+} from "../../models/contact/authenticated";
 import { fetchProfile } from "../../solidClientHelpers/profile";
 
 export const GET_PROFILE = "getProfile";
@@ -37,10 +43,10 @@ export default function useAgentProfile(webId, options) {
     async () => {
       if (!webId) return null;
       if (webId === PUBLIC_AGENT_PREDICATE) {
-        return { name: "Anyone" };
+        return { name: PUBLIC_AGENT_NAME };
       }
       if (webId === AUTHENTICATED_AGENT_PREDICATE) {
-        return { name: "Anyone signed in" };
+        return { name: AUTHENTICATED_AGENT_NAME };
       }
       return fetchProfile(webId, fetch);
     },

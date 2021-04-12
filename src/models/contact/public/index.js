@@ -31,6 +31,8 @@ import { foaf } from "rdf-namespaces";
 import { chain } from "../../../solidClientHelpers/utils";
 
 const AGENT_PREDICATE = "http://www.w3.org/ns/solid/acp#agent";
+export const PUBLIC_AGENT_NAME = "Anyone";
+
 export const PUBLIC_AGENT_PREDICATE =
   "http://www.w3.org/ns/solid/acp#PublicAgent";
 
