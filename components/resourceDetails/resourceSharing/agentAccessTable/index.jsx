@@ -110,7 +110,7 @@ export default function AgentAccessTable({ type }) {
       columns,
       data,
       initialState: {
-        sortBy: [{ id: "name", desc: false }],
+        sortBy: [{ id: "webId", desc: false }],
       },
     },
     useFilters,
