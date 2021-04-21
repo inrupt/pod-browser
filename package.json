@@ -29,7 +29,7 @@
     "@inrupt/prism-react-components": "^0.13.3",
     "@inrupt/solid-client": "^1.3.0",
     "@inrupt/solid-client-authn-browser": "^1.6.0",
-    "@inrupt/solid-ui-react": "^1.7.0",
+    "@inrupt/solid-ui-react": "^2.1.2-choreupgrade-auth-705117955-722-1617197227.0",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.57",
