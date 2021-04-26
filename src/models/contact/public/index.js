@@ -32,6 +32,7 @@ import { chain } from "../../../solidClientHelpers/utils";
 
 const AGENT_PREDICATE = "http://www.w3.org/ns/solid/acp#agent";
 export const PUBLIC_AGENT_NAME = "Anyone";
+export const PUBLIC_AGENT_TYPE = "public";
 
 export const PUBLIC_AGENT_PREDICATE =
   "http://www.w3.org/ns/solid/acp#PublicAgent";

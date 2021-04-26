@@ -198,32 +198,18 @@ exports[`AgentAccess without profile renders an error message with a 'try again'
 exports[`AgentAccess without profile renders skeleton placeholders when profile is not available 1`] = `
 <DocumentFragment>
   <div
-    class="PodBrowser-nameAndAvatarContainer"
+    class="PodBrowser-loadingStateContainer"
   >
-    <div
-      class="PodBrowser-root PodBrowser-circle PodBrowser-avatar"
-    >
-      <img
-        alt="https://example.com/profile/card#me"
-        class="PodBrowser-img"
-        src="http://alice.example.com/alice.jpg"
+    <span
+      class="PodBrowser-root PodBrowser-circle PodBrowser-pulse"
+      style="width: 40px; height: 40px;"
+    />
+    <div>
+      <span
+        class="PodBrowser-root PodBrowser-text PodBrowser-pulse"
+        style="width: 100px;"
       />
     </div>
-    <p
-      class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
-      data-testid="agent-web-id"
-    >
-      Alice
-    </p>
-    <button
-      class="PodBrowser-button"
-      data-testid="menu-button"
-      type="button"
-    >
-      <i
-        class="PodBrowser-icon-more"
-      />
-    </button>
   </div>
 </DocumentFragment>
 `;

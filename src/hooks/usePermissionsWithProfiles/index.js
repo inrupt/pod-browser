@@ -21,6 +21,8 @@
 
 import { useSession } from "@inrupt/solid-ui-react";
 import { useState, useEffect } from "react";
+import { AUTHENTICATED_AGENT_PREDICATE } from "../../models/contact/authenticated";
+import { PUBLIC_AGENT_PREDICATE } from "../../models/contact/public";
 import { fetchProfile } from "../../solidClientHelpers/profile";
 
 export default function usePermissionsWithProfiles(permissions) {
@@ -33,6 +35,12 @@ export default function usePermissionsWithProfiles(permissions) {
       permissions.map(async (p) => {
         let profile;
         let profileError;
+        if (
+          p.webId === PUBLIC_AGENT_PREDICATE ||
+          p.webId === AUTHENTICATED_AGENT_PREDICATE
+        ) {
+          return p;
+        }
         try {
           profile = await fetchProfile(p.webId, fetch);
         } catch (error) {

@@ -173,7 +173,7 @@ exports[`AgentAccessTable with agents renders a list of permissions 1`] = `
                           class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
                           data-testid="agent-web-id"
                         >
-                          Example A
+                          Example B
                         </p>
                         <button
                           class="PodBrowser-button"
@@ -207,7 +207,7 @@ exports[`AgentAccessTable with agents renders a list of permissions 1`] = `
                           class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
                           data-testid="agent-web-id"
                         >
-                          Example A
+                          Example C
                         </p>
                         <button
                           class="PodBrowser-button"

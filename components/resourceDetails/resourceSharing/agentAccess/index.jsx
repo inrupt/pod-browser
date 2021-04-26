@@ -21,7 +21,7 @@
 
 /* eslint-disable react/forbid-prop-types */
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import T from "prop-types";
 import { Button, CircularProgress, createStyles } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
@@ -31,8 +31,15 @@ import { getSourceUrl } from "@inrupt/solid-client";
 import { Alert, Skeleton } from "@material-ui/lab";
 import styles from "./styles";
 import { getProfile } from "../../../../src/models/profile";
-import useAgentProfile from "../../../../src/hooks/useAgentProfile";
 import AgentProfileDetails from "./agentProfileDetails";
+import {
+  PUBLIC_AGENT_NAME,
+  PUBLIC_AGENT_PREDICATE,
+} from "../../../../src/models/contact/public";
+import {
+  AUTHENTICATED_AGENT_NAME,
+  AUTHENTICATED_AGENT_PREDICATE,
+} from "../../../../src/models/contact/authenticated";
 
 const useStyles = makeStyles((theme) => createStyles(styles(theme)));
 
@@ -45,27 +52,36 @@ export default function AgentAccess({ permission }) {
     session: { fetch },
   } = useSession();
   const bem = useBem(useStyles());
-  const { webId, acl } = permission;
+  const { webId, acl, profile, profileError } = permission;
   const { dataset } = useContext(DatasetContext);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [localProfile, setLocalProfile] = useState(profile);
+  const [localProfileError, setLocalProfileError] = useState(profileError);
   const [loading, setLoading] = useState(false);
   const resourceIri = getSourceUrl(dataset);
   const [localAccess, setLocalAccess] = useState(acl);
 
-  const {
-    data: localProfile,
-    error: localProfileError,
-    mutate: mutateProfile,
-  } = useAgentProfile(webId);
+  useEffect(() => {
+    if (webId === PUBLIC_AGENT_PREDICATE) {
+      setLocalProfile({ name: PUBLIC_AGENT_NAME });
+    }
+    if (webId === AUTHENTICATED_AGENT_PREDICATE) {
+      setLocalProfile({ name: AUTHENTICATED_AGENT_NAME });
+    }
+  }, [webId]);
 
   const handleRetryClick = async () => {
-    const { profile, profileError } = await getProfile(webId, fetch);
-    if (profile) {
+    const {
+      profile: fetchedProfile,
+      profileError: fetchedProfileError,
+    } = await getProfile(webId, fetch);
+    if (fetchedProfile) {
       setIsLoadingProfile(false);
-      mutateProfile(profile, true);
+      setLocalProfile(profile, true);
     }
     if (profileError) {
       setIsLoadingProfile(false);
+      setLocalProfileError(fetchedProfileError);
     }
   };
 

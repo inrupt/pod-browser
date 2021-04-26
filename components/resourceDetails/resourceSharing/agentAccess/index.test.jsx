@@ -30,23 +30,19 @@ import * as profileFns from "../../../../src/solidClientHelpers/profile";
 import { mockProfileAlice } from "../../../../__testUtils/mockPersonResource";
 import { PUBLIC_AGENT_PREDICATE } from "../../../../src/models/contact/public";
 import { AUTHENTICATED_AGENT_PREDICATE } from "../../../../src/models/contact/authenticated";
-import useAgentProfile from "../../../../src/hooks/useAgentProfile";
 
 jest.mock("../../../../src/hooks/useAgentProfile");
-const mockedUseAgentProfile = useAgentProfile;
 
 const webId = "https://example.com/profile/card#me";
 
 describe("AgentAccess", () => {
   describe("with profile", () => {
-    beforeEach(() => {
-      mockedUseAgentProfile.mockReturnValue({ data: mockProfileAlice() });
-    });
     const permission = {
       acl: createAccessMap(true, true, false, false),
       webId,
       alias: "Editors",
       type: "agent",
+      profile: mockProfileAlice(),
     };
 
     it("renders", () => {
@@ -85,15 +81,7 @@ describe("AgentAccess", () => {
     });
   });
   describe("without profile", () => {
-    const mutateProfile = jest.fn();
     it("renders skeleton placeholders when profile is not available", () => {
-      beforeEach(() => {
-        mockedUseAgentProfile.mockReturnValue({
-          data: undefined,
-          error: new Error("error"),
-          mutate: mutateProfile,
-        });
-      });
       const { asFragment } = renderWithTheme(
         <AgentAccess
           permission={{
@@ -101,6 +89,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: undefined,
+            profileError: undefined,
           }}
         />
       );
@@ -123,10 +113,6 @@ describe("AgentAccess", () => {
     });
 
     it("renders a skeleton while loading profile", async () => {
-      mockedUseAgentProfile.mockReturnValue({
-        data: undefined,
-        error: undefined,
-      });
       const { asFragment } = renderWithTheme(
         <AgentAccess
           permission={{
@@ -134,8 +120,9 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: undefined,
+            profileError: undefined,
           }}
-          mutatePermissions={mutatePermissions}
         />
       );
       expect(asFragment()).toMatchSnapshot();
@@ -149,6 +136,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -164,6 +153,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -182,6 +173,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -203,19 +196,17 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
       const button = await findByTestId("try-again-button");
       userEvent.click(button);
-      mockedUseAgentProfile.mockReturnValue({
-        data: mockProfileAlice(),
-      });
       await waitFor(() =>
         expect(fetchProfileSpy).toHaveBeenCalledWith(webId, expect.anything())
       );
       fetchProfileSpy.mockResolvedValueOnce(mockProfileAlice());
-      await waitFor(() => expect(mutateProfile).toHaveBeenCalled());
       await waitFor(() =>
         expect(queryByTestId("try-again-spinner")).toBeFalsy()
       );
@@ -230,6 +221,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
