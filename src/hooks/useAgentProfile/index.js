@@ -19,40 +19,37 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import useSWR from "swr";
 import { useSession } from "@inrupt/solid-ui-react";
-import { useState, useEffect } from "react";
-import { AUTHENTICATED_AGENT_PREDICATE } from "../../models/contact/authenticated";
-import { PUBLIC_AGENT_PREDICATE } from "../../models/contact/public";
+import {
+  PUBLIC_AGENT_NAME,
+  PUBLIC_AGENT_PREDICATE,
+} from "../../models/contact/public";
+import {
+  AUTHENTICATED_AGENT_NAME,
+  AUTHENTICATED_AGENT_PREDICATE,
+} from "../../models/contact/authenticated";
 import { fetchProfile } from "../../solidClientHelpers/profile";
 
-export default function usePermissionsWithProfiles(permissions) {
-  const [permissionsWithProfiles, setPermissionsWithProfiles] = useState([]);
-  const { fetch } = useSession();
+export const GET_PROFILE = "getProfile";
 
-  useEffect(() => {
-    if (!permissions) return;
-    Promise.all(
-      permissions.map(async (p) => {
-        let profile;
-        let profileError;
-        if (
-          p.webId === PUBLIC_AGENT_PREDICATE ||
-          p.webId === AUTHENTICATED_AGENT_PREDICATE
-        ) {
-          return p;
-        }
-        try {
-          profile = await fetchProfile(p.webId, fetch);
-        } catch (error) {
-          profileError = error;
-        }
-        return {
-          ...p,
-          profile,
-          profileError,
-        };
-      })
-    ).then((completed) => setPermissionsWithProfiles(completed));
-  }, [permissions, fetch]);
-  return { permissionsWithProfiles };
+export default function useAgentProfile(webId, options) {
+  const {
+    session: { fetch },
+  } = useSession();
+
+  return useSWR(
+    [webId, GET_PROFILE],
+    async () => {
+      if (!webId) return null;
+      if (webId === PUBLIC_AGENT_PREDICATE) {
+        return { name: PUBLIC_AGENT_NAME };
+      }
+      if (webId === AUTHENTICATED_AGENT_PREDICATE) {
+        return { name: AUTHENTICATED_AGENT_NAME };
+      }
+      return fetchProfile(webId, fetch);
+    },
+    options
+  );
 }

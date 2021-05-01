@@ -36,9 +36,10 @@ import {
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import usePolicyPermissions from "../../../../src/hooks/usePolicyPermissions";
+import usePermissionsWithProfiles from "../../../../src/hooks/usePermissionsWithProfiles";
 import AgentAccess from "../agentAccess";
 import AddAgentButton from "../addAgentButton";
-import AgentsTableTabs from "../agentsTableTabs";
+// import AgentsTableTabs from "../agentsTableTabs";
 import AgentsSearchBar from "../agentsSearchBar";
 import { POLICIES_TYPE_MAP } from "../../../../constants/policies";
 
@@ -46,6 +47,8 @@ import styles from "./styles";
 import PolicyHeader from "../policyHeader";
 import PolicyActionButton from "../policyActionButton";
 import { isCustomPolicy } from "../../../../src/models/policy";
+import { PUBLIC_AGENT_TYPE } from "../../../../src/models/contact/public";
+import { AUTHENTICATED_AGENT_TYPE } from "../../../../src/models/contact/authenticated";
 
 const useStyles = makeStyles((theme) => createStyles(styles(theme)));
 const TESTCAFE_ID_SHOW_ALL_BUTTON = "show-all-button";
@@ -56,11 +59,22 @@ export default function AgentAccessTable({ type }) {
   const [loading, setLoading] = useState(false);
   const [permissions, setPermissions] = useState([]);
   const { data: policyPermissions } = usePolicyPermissions(type);
+  const { permissionsWithProfiles } = usePermissionsWithProfiles(
+    policyPermissions
+  );
 
   useEffect(() => {
-    if (!policyPermissions) return;
-    setPermissions(policyPermissions);
-  }, [policyPermissions]);
+    if (!permissionsWithProfiles) return;
+    const publicAndAuth = permissionsWithProfiles?.filter(
+      (p) => p.type === PUBLIC_AGENT_TYPE || p.type === AUTHENTICATED_AGENT_TYPE
+    );
+    const sorted = permissionsWithProfiles
+      .filter((p) => p.type === "agent")
+      .sort((a, b) => {
+        return a.profile?.name.localeCompare(b.profile?.name);
+      });
+    setPermissions(publicAndAuth.concat(sorted));
+  }, [permissionsWithProfiles]);
 
   const bem = useBem(useStyles());
 
@@ -73,20 +87,17 @@ export default function AgentAccessTable({ type }) {
     () => [
       {
         header: "",
-        accessor: "name",
-        disableSortBy: true,
+        accessor: "profile.name",
         modifiers: ["align-center", "width-preview"],
       },
       {
         header: "",
         accessor: "webId",
-        disableSortBy: true,
         modifiers: ["align-center", "width-preview"],
       },
       {
         header: "",
         accessor: "type",
-        disableSortBy: true,
         modifiers: ["align-center", "width-preview"],
       },
     ],
@@ -112,7 +123,9 @@ export default function AgentAccessTable({ type }) {
     {
       columns,
       data,
-      defaultCanSort: true,
+      initialState: {
+        sortBy: [{ id: "profile.name", desc: false }],
+      },
     },
     useFilters,
     useGlobalFilter

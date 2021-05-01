@@ -1,8 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`AgentAccessTable does not render table at all if there aren't any permissions for a custom policy 1`] = `<DocumentFragment />`;
-
-exports[`AgentAccessTable renders a list of permissions 1`] = `
+exports[`AgentAccessTable with agents renders a list of permissions 1`] = `
 <DocumentFragment>
   <div
     class="PodBrowser-root PodBrowser-root PodBrowser-accordion PodBrowser-expanded PodBrowser-rounded PodBrowser-rounded PodBrowser-elevation1 PodBrowser-rounded"
@@ -128,23 +126,123 @@ exports[`AgentAccessTable renders a list of permissions 1`] = `
                       class="PodBrowser-table__body-cell PodBrowser-agent-cell"
                     >
                       <div
-                        class="PodBrowser-loadingStateContainer"
+                        class="PodBrowser-nameAndAvatarContainer"
                       >
-                        <span
-                          class="PodBrowser-root PodBrowser-circle PodBrowser-pulse"
-                          style="width: 40px; height: 40px;"
-                        />
-                        <div>
+                        <div
+                          class="PodBrowser-root PodBrowser-circle PodBrowser-avatar PodBrowser-colorDefault"
+                        >
                           <span
-                            class="PodBrowser-root PodBrowser-text PodBrowser-pulse"
-                            style="width: 100px;"
+                            class="PodBrowser-icon-user PodBrowser-avatar__icon"
                           />
                         </div>
+                        <p
+                          class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+                          data-testid="agent-web-id"
+                        >
+                          Example A
+                        </p>
+                        <button
+                          class="PodBrowser-button"
+                          data-testid="menu-button"
+                          type="button"
+                        >
+                          <i
+                            class="PodBrowser-icon-more"
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    class="PodBrowser-table__body-row"
+                  >
+                    <td
+                      class="PodBrowser-table__body-cell PodBrowser-agent-cell"
+                    >
+                      <div
+                        class="PodBrowser-nameAndAvatarContainer"
+                      >
+                        <div
+                          class="PodBrowser-root PodBrowser-circle PodBrowser-avatar PodBrowser-colorDefault"
+                        >
+                          <span
+                            class="PodBrowser-icon-user PodBrowser-avatar__icon"
+                          />
+                        </div>
+                        <p
+                          class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+                          data-testid="agent-web-id"
+                        >
+                          Example B
+                        </p>
+                        <button
+                          class="PodBrowser-button"
+                          data-testid="menu-button"
+                          type="button"
+                        >
+                          <i
+                            class="PodBrowser-icon-more"
+                          />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr
+                    class="PodBrowser-table__body-row"
+                  >
+                    <td
+                      class="PodBrowser-table__body-cell PodBrowser-agent-cell"
+                    >
+                      <div
+                        class="PodBrowser-nameAndAvatarContainer"
+                      >
+                        <div
+                          class="PodBrowser-root PodBrowser-circle PodBrowser-avatar PodBrowser-colorDefault"
+                        >
+                          <span
+                            class="PodBrowser-icon-user PodBrowser-avatar__icon"
+                          />
+                        </div>
+                        <p
+                          class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+                          data-testid="agent-web-id"
+                        >
+                          Example C
+                        </p>
+                        <button
+                          class="PodBrowser-button"
+                          data-testid="menu-button"
+                          type="button"
+                        >
+                          <i
+                            class="PodBrowser-icon-more"
+                          />
+                        </button>
                       </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
+              <div
+                class="PodBrowser-showAllButtonContainer"
+              >
+                <button
+                  class="PodBrowser-showAllButton"
+                  data-testid="show-all-button"
+                  type="button"
+                >
+                  <p
+                    class="PodBrowser-root PodBrowser-body1 PodBrowser-showAllText"
+                  >
+                    <span>
+                      Show all (4) 
+                      <i
+                        class="PodBrowser-icon-caret-down PodBrowser-showAllButtonIcon"
+                      />
+                    </span>
+                  </p>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -154,7 +252,9 @@ exports[`AgentAccessTable renders a list of permissions 1`] = `
 </DocumentFragment>
 `;
 
-exports[`AgentAccessTable renders an empty list of permissions if permissions are unavailable 1`] = `
+exports[`AgentAccessTable without agents does not render table at all if there aren't any permissions for a custom policy 1`] = `<DocumentFragment />`;
+
+exports[`AgentAccessTable without agents renders an empty list of permissions if permissions are unavailable 1`] = `
 <DocumentFragment>
   <div
     class="PodBrowser-root PodBrowser-root PodBrowser-accordion PodBrowser-expanded PodBrowser-rounded PodBrowser-rounded PodBrowser-elevation1 PodBrowser-rounded"
@@ -247,7 +347,7 @@ exports[`AgentAccessTable renders an empty list of permissions if permissions ar
 </DocumentFragment>
 `;
 
-exports[`AgentAccessTable renders an empty list of permissions if there are no permissions and the policy is not custom 1`] = `
+exports[`AgentAccessTable without agents renders an empty list of permissions if there are no permissions and the policy is not custom 1`] = `
 <DocumentFragment>
   <div
     class="PodBrowser-root PodBrowser-root PodBrowser-accordion PodBrowser-expanded PodBrowser-rounded PodBrowser-rounded PodBrowser-elevation1 PodBrowser-rounded"

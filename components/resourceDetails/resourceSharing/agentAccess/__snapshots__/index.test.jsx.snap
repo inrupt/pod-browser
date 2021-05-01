@@ -15,7 +15,9 @@ exports[`AgentAccess for authenticated agent renders correctly 1`] = `
     <p
       class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
       data-testid="agent-web-id"
-    />
+    >
+      Anyone signed in
+    </p>
     <button
       class="PodBrowser-button"
       data-testid="menu-button"
@@ -44,7 +46,9 @@ exports[`AgentAccess for public agent renders correctly 1`] = `
     <p
       class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
       data-testid="agent-web-id"
-    />
+    >
+      Anyone
+    </p>
     <button
       class="PodBrowser-button"
       data-testid="menu-button"
@@ -59,6 +63,39 @@ exports[`AgentAccess for public agent renders correctly 1`] = `
 `;
 
 exports[`AgentAccess with profile renders 1`] = `
+<DocumentFragment>
+  <div
+    class="PodBrowser-nameAndAvatarContainer"
+  >
+    <div
+      class="PodBrowser-root PodBrowser-circle PodBrowser-avatar"
+    >
+      <img
+        alt="https://example.com/profile/card#me"
+        class="PodBrowser-img"
+        src="http://alice.example.com/alice.jpg"
+      />
+    </div>
+    <p
+      class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+      data-testid="agent-web-id"
+    >
+      Alice
+    </p>
+    <button
+      class="PodBrowser-button"
+      data-testid="menu-button"
+      type="button"
+    >
+      <i
+        class="PodBrowser-icon-more"
+      />
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`AgentAccess without profile renders a skeleton while loading profile 1`] = `
 <DocumentFragment>
   <div
     class="PodBrowser-loadingStateContainer"
@@ -80,17 +117,79 @@ exports[`AgentAccess with profile renders 1`] = `
 exports[`AgentAccess without profile renders an error message with a 'try again' button if it's unable to load profile 1`] = `
 <DocumentFragment>
   <div
-    class="PodBrowser-loadingStateContainer"
+    class="PodBrowser-alert-container"
   >
-    <span
-      class="PodBrowser-root PodBrowser-circle PodBrowser-pulse"
-      style="width: 40px; height: 40px;"
+    <div
+      class="PodBrowser-root PodBrowser-root PodBrowser-alertBox PodBrowser-standardWarning PodBrowser-elevation0"
+      role="alert"
+    >
+      <div
+        class="PodBrowser-icon PodBrowser-icon"
+      >
+        <svg
+          aria-hidden="true"
+          class="PodBrowser-root PodBrowser-fontSizeInherit"
+          focusable="false"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M12 5.99L19.53 19H4.47L12 5.99M12 2L1 21h22L12 2zm1 14h-2v2h2v-2zm0-6h-2v4h2v-4z"
+          />
+        </svg>
+      </div>
+      <div
+        class="PodBrowser-message PodBrowser-alertMessage"
+      >
+        Unable to load this profile
+      </div>
+      <div
+        class="PodBrowser-action PodBrowser-action"
+      >
+        <button
+          class="PodBrowser-root PodBrowser-root PodBrowser-text PodBrowser-bold-button PodBrowser-colorInherit PodBrowser-textSizeSmall PodBrowser-sizeSmall"
+          data-testid="try-again-button"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="PodBrowser-label"
+          >
+            Try again
+          </span>
+          <span
+            class="PodBrowser-root"
+          />
+        </button>
+      </div>
+    </div>
+    <div
+      class="PodBrowser-separator"
     />
-    <div>
-      <span
-        class="PodBrowser-root PodBrowser-text PodBrowser-pulse"
-        style="width: 100px;"
-      />
+    <div
+      class="PodBrowser-nameAndAvatarContainer"
+    >
+      <div
+        class="PodBrowser-root PodBrowser-circle PodBrowser-avatar PodBrowser-colorDefault"
+      >
+        <span
+          class="PodBrowser-icon-user PodBrowser-avatar__icon"
+        />
+      </div>
+      <p
+        class="PodBrowser-root PodBrowser-detailText PodBrowser-body1 PodBrowser-detailText"
+        data-testid="agent-web-id"
+      >
+        https://example.com/profile/card#me
+      </p>
+      <button
+        class="PodBrowser-button"
+        data-testid="menu-button"
+        type="button"
+      >
+        <i
+          class="PodBrowser-icon-more"
+        />
+      </button>
     </div>
   </div>
 </DocumentFragment>

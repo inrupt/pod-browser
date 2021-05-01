@@ -22,7 +22,7 @@
 import { renderHook, act } from "@testing-library/react-hooks";
 import useLocalStorage from "./index";
 import * as windowFns from "../../windowHelpers/index";
-import { getConsole, getFakeLocalStorage } from "../../windowHelpers/index";
+import { getFakeLocalStorage } from "../../windowHelpers/index";
 import mockConsole from "../../../__testUtils/mockConsole";
 
 describe("useLocalStorage", () => {

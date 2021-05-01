@@ -26,26 +26,23 @@ import userEvent from "@testing-library/user-event";
 import { createAccessMap } from "../../../../src/solidClientHelpers/permissions";
 import AgentAccess from "./index";
 import { renderWithTheme } from "../../../../__testUtils/withTheme";
-import { fetchProfile } from "../../../../src/solidClientHelpers/profile";
+import * as profileFns from "../../../../src/solidClientHelpers/profile";
 import { mockProfileAlice } from "../../../../__testUtils/mockPersonResource";
 import { PUBLIC_AGENT_PREDICATE } from "../../../../src/models/contact/public";
 import { AUTHENTICATED_AGENT_PREDICATE } from "../../../../src/models/contact/authenticated";
 
-jest.mock("../../../../src/solidClientHelpers/profile");
-const mockedFetchProfile = fetchProfile;
+jest.mock("../../../../src/hooks/useAgentProfile");
 
 const webId = "https://example.com/profile/card#me";
 
 describe("AgentAccess", () => {
   describe("with profile", () => {
-    beforeEach(() => {
-      mockedFetchProfile.mockReturnValue(mockProfileAlice());
-    });
     const permission = {
       acl: createAccessMap(true, true, false, false),
       webId,
       alias: "Editors",
       type: "agent",
+      profile: mockProfileAlice(),
     };
 
     it("renders", () => {
@@ -85,9 +82,6 @@ describe("AgentAccess", () => {
   });
   describe("without profile", () => {
     it("renders skeleton placeholders when profile is not available", () => {
-      beforeEach(() => {
-        mockedFetchProfile.mockRejectedValue("error");
-      });
       const { asFragment } = renderWithTheme(
         <AgentAccess
           permission={{
@@ -95,6 +89,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: undefined,
+            profileError: undefined,
           }}
         />
       );
@@ -116,6 +112,22 @@ describe("AgentAccess", () => {
       expect(asFragment()).toMatchSnapshot();
     });
 
+    it("renders a skeleton while loading profile", async () => {
+      const { asFragment } = renderWithTheme(
+        <AgentAccess
+          permission={{
+            acl: createAccessMap(true, true, false, false),
+            webId,
+            alias: "Editors",
+            type: "agent",
+            profile: undefined,
+            profileError: undefined,
+          }}
+        />
+      );
+      expect(asFragment()).toMatchSnapshot();
+    });
+
     it("renders an error message with a 'try again' button if it's unable to load profile", () => {
       const { asFragment, findByTestId } = renderWithTheme(
         <AgentAccess
@@ -124,6 +136,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -139,6 +153,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -149,6 +165,7 @@ describe("AgentAccess", () => {
     });
 
     it("tries to fetch the profile again when clicking 'try again' button", async () => {
+      const fetchProfileSpy = jest.spyOn(profileFns, "fetchProfile");
       const { findByTestId } = renderWithTheme(
         <AgentAccess
           permission={{
@@ -156,6 +173,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -163,11 +182,13 @@ describe("AgentAccess", () => {
       userEvent.click(button);
 
       await waitFor(() =>
-        expect(fetchProfile).toHaveBeenCalledWith(webId, expect.anything())
+        expect(fetchProfileSpy).toHaveBeenCalledWith(webId, expect.anything())
       );
     });
 
     it("removes the spinner when fetching succeeds", async () => {
+      const fetchProfileSpy = jest.spyOn(profileFns, "fetchProfile");
+
       const { findByTestId, queryByTestId } = renderWithTheme(
         <AgentAccess
           permission={{
@@ -175,20 +196,24 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
       const button = await findByTestId("try-again-button");
       userEvent.click(button);
-
-      mockedFetchProfile.mockResolvedValueOnce("profile");
-
+      await waitFor(() =>
+        expect(fetchProfileSpy).toHaveBeenCalledWith(webId, expect.anything())
+      );
+      fetchProfileSpy.mockResolvedValueOnce(mockProfileAlice());
       await waitFor(() =>
         expect(queryByTestId("try-again-spinner")).toBeFalsy()
       );
     });
 
     it("removes the spinner when fetching errors", async () => {
+      const fetchProfileSpy = jest.spyOn(profileFns, "fetchProfile");
       const { getByTestId, queryByTestId } = renderWithTheme(
         <AgentAccess
           permission={{
@@ -196,6 +221,8 @@ describe("AgentAccess", () => {
             webId,
             alias: "Editors",
             type: "agent",
+            profile: null,
+            profileError: "error",
           }}
         />
       );
@@ -205,7 +232,7 @@ describe("AgentAccess", () => {
       });
 
       await waitFor(() =>
-        expect(fetchProfile).toHaveBeenCalledWith(webId, expect.anything())
+        expect(fetchProfileSpy).toHaveBeenCalledWith(webId, expect.anything())
       );
       await waitFor(() =>
         expect(queryByTestId("try-again-spinner")).toBeFalsy()
