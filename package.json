@@ -37,7 +37,6 @@
     "@sentry/react": "^6.1.0",
     "@solid/lit-prism-patterns": "^0.13.3",
     "@solid/lit-prism-theme-sdk-default": "^0.13.3",
-    "@zeit/next-source-maps": "0.0.4-canary.1",
     "encoding": "^0.1.13",
     "jss": "^10.5.1",
     "jss-preset-default": "^10.5.1",

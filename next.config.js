@@ -19,7 +19,6 @@
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const withSourceMaps = require("@zeit/next-source-maps")();
 const SentryWebpackPlugin = require("@sentry/webpack-plugin");
 
 const {
@@ -34,7 +33,8 @@ const {
 process.env.SENTRY_DSN = SENTRY_DSN;
 
 /* eslint no-param-reassign: 0 */
-module.exports = withSourceMaps({
+module.exports = {
+  productionBrowserSourceMaps: true,
   webpack(config, options) {
     // If the environment is the browser, we should load sentry/react instead of
     // sentry/node.
@@ -62,4 +62,4 @@ module.exports = withSourceMaps({
 
     return config;
   },
-});
+};
