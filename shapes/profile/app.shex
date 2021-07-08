@@ -1,0 +1,36 @@
+PREFIX oidc: <http://www.w3.org/ns/solid/oidc#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schem: <http://schema.org/>
+PREFIX vcard: <http://www.w3.org/2006/vcard/ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX acl: <http://www.w3.org/ns/auth/acl#>
+PREFIX cert:  <http://www.w3.org/ns/auth/cert#>
+PREFIX ldp: <http://www.w3.org/ns/ldp#>
+PREFIX sp: <http://www.w3.org/ns/pim/space#>
+PREFIX solid: <http://www.w3.org/ns/solid/terms#>
+
+<#id> {
+  a schem:SoftwareApplication
+    // rdfs:comment  "A software application. (from Schema.org)" ;
+  oidc:redirect_uris IRI + 
+    // rdfs:comment  "URIs where the Solid Identity Provider may redirect the user to complete the login process" ;
+  oidc:scope xsd:string ?
+    // rdfs:comment  "A string containing a space-delimited list of OAuth2.0 scopes your application is allowed to request." ;
+  oidc:grant_types [ "authorization_code"
+                      "refresh_token" ] +
+    // rdfs:comment  "An array containing the OAuth2.0 flows supported by your application. ." ;
+  oidc:response_types xsd:string +
+    // rdfs:comment  "An array containing the methods the Solid Identity Provider should use to send information to the application when redirecting the user to complete login." ;
+  oidc:client_name xsd:string *
+    // rdfs:comment  "A string containing a user-friendly name for the application." ;
+  oidc:client_uri IRI *
+    // rdfs:comment  "A string containing the application’s homepage URI." ;
+  oidc:logo_uri IRI *
+    // rdfs:comment  "A string containing the URI where the application’s logo is available." ;
+  oidc:tos_uri IRI *
+    // rdfs:comment  "A string containing the URI where the application’s terms of service are available." ;
+  oidc:default_max_age xsd:integer ? 
+   // rdfs:comment "A number that indicates the maximum time, in seconds, that a user can remain authenticated. " ;
+   oidc:contacts IRI *
+}
