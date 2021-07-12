@@ -35,7 +35,7 @@ const TESTCAFE_ID_LOGIN_BUTTON = "login-button";
 const TESTCAFE_ID_LOGIN_TITLE = "login-title";
 export const TESTCAFE_ID_OTHER_PROVIDERS_BUTTON = "other-providers-button";
 const PROVIDER_IRI = "https://broker.pod.inrupt.com/";
-const CLIENT_APP_WEBID = `${process.env.NEXT_PUBLIC_VERCEL_GIT_REPO_SLUG}${process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_REF}.vercel.app/app.jsonld#id`;
+const CLIENT_APP_WEBID = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/app.jsonld#id`;
 
 export default function Login() {
   const bem = useBem(useStyles());
