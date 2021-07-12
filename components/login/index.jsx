@@ -35,8 +35,7 @@ const TESTCAFE_ID_LOGIN_BUTTON = "login-button";
 const TESTCAFE_ID_LOGIN_TITLE = "login-title";
 export const TESTCAFE_ID_OTHER_PROVIDERS_BUTTON = "other-providers-button";
 const PROVIDER_IRI = "https://broker.pod.inrupt.com/";
-const CLIENT_APP_WEBID =
-  "https://pod-browser-git-feature-app-authentication-inrupt.vercel.app/app.jsonld#id";
+const CLIENT_APP_WEBID = `${process.env.VERCEL_URL}/app.jsonld#id`;
 
 export default function Login() {
   const bem = useBem(useStyles());
