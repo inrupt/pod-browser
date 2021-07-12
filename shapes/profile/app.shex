@@ -1,0 +1,29 @@
+PREFIX oidc: <http://www.w3.org/ns/solid/oidc#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX schem: <http://schema.org/>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+
+<#id> EXTRA oidc:grant_types {
+  a schem:SoftwareApplication
+    // rdfs:comment  "A software application. (from Schema.org)"@en ;
+  oidc:redirect_uris IRI + 
+    // rdfs:comment  "URIs where the Solid Identity Provider may redirect the user to complete the login process."@en ;
+  oidc:scope xsd:string ?
+    // rdfs:comment  "A string containing a space-delimited list of OAuth2.0 scopes your application is allowed to request."@en ;
+  oidc:grant_types [ "authorization_code" ] +
+    // rdfs:comment  "An array containing the OAuth2.0 flows supported by your application."@en ;
+  oidc:response_types xsd:string +
+    // rdfs:comment  "An array containing the methods the Solid Identity Provider should use to send information to the application when redirecting the user to complete login."@en ;
+  oidc:client_name xsd:string *
+    // rdfs:comment  "A string containing a user-friendly name for the application."@en ;
+  oidc:client_uri IRI ?
+    // rdfs:comment  "A string containing the application’s homepage URI."@en ;
+  oidc:logo_uri IRI ?
+    // rdfs:comment  "A string containing the URI where the application’s logo is available."@en ;
+  oidc:tos_uri IRI ?
+    // rdfs:comment  "A string containing the URI where the application’s terms of service are available."@en ;
+  oidc:default_max_age xsd:integer ? 
+   // rdfs:comment "A number that indicates the maximum time, in seconds, that a user can remain authenticated. "@en ;
+   oidc:contacts IRI *
+}
