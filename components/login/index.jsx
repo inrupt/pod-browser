@@ -28,16 +28,14 @@ import InfoTooltip from "../infoTooltip";
 import ProviderLogin from "./provider";
 import styles from "./styles";
 import { generateRedirectUrl } from "../../src/windowHelpers";
+import useClientId from "../../src/hooks/useClientId";
 
 const useStyles = makeStyles((theme) => createStyles(styles(theme)));
 const TESTCAFE_ID_LOGIN_BUTTON = "login-button";
 const TESTCAFE_ID_LOGIN_TITLE = "login-title";
 export const TESTCAFE_ID_OTHER_PROVIDERS_BUTTON = "other-providers-button";
 const PROVIDER_IRI = "https://broker.pod.inrupt.com/";
-
-const authOptions = {
-  clientName: "Inrupt PodBrowser",
-};
+const CLIENT_APP_WEBID = `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/app.jsonld#id`;
 
 export default function Login() {
   const bem = useBem(useStyles());
@@ -47,6 +45,13 @@ export default function Login() {
   const toggleOpenDropdown = () => setIsOpen(!isOpen);
   const INFO_TOOLTIP_TEXT = "This is where you signed up for a Solid Pod";
   const INFO_BUTTON_LABEL = "Where is your Pod hosted?";
+
+  const oidcSupported = useClientId(PROVIDER_IRI);
+
+  const authOptions = {
+    clientName: "Inrupt PodBrowser",
+    clientId: oidcSupported.response ? CLIENT_APP_WEBID : null,
+  };
 
   return (
     <div className={bem("login-form")}>
